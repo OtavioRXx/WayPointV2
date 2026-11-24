@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Entrar | WayPoint</title>
+    <meta name="theme-color" content="#0B2239">
+    <link rel="icon" type="image/svg+xml" th:href="@{/img/favicon.svg}" href="/img/favicon.svg">
+    <link rel="alternate icon" type="image/png" th:href="@{/img/IconeWaypoint.png}" href="/img/IconeWaypoint.png">
+    <link rel="stylesheet" th:href="@{/css/waypoint.css?v=3}" href="/css/waypoint.css?v=3">
+    <script>if (window.location.protocol === 'file:') window.location.replace('http://localhost:8080/login');</script>
+</head>
+<body>
+<div class="auth-page">
+    <section class="auth-showcase" aria-label="Sobre o WayPoint">
+        <div class="auth-logo"><img th:src="@{/img/LogoWaypoint-claro.png}" src="/img/LogoWaypoint-claro.png" alt="WayPoint" width="168" height="61"></div>
+        <div class="auth-showcase-inner">
+            <h1>Mobilidade urbana mais simples de acompanhar.</h1>
+            <p>Uma plataforma colaborativa para visualizar linhas, paradas, ocorrências e informações relevantes do transporte público.</p>
+            <ul class="auth-feature-list">
+                <li><svg class="icon" aria-hidden="true"><use href="/img/icons.svg#i-route"></use></svg>Monitoramento de linhas e rotas</li>
+                <li><svg class="icon" aria-hidden="true"><use href="/img/icons.svg#i-users"></use></svg>Informações colaborativas dos usuários</li>
+                <li><svg class="icon" aria-hidden="true"><use href="/img/icons.svg#i-bell"></use></svg>Notificações e ocorrências em um só lugar</li>
+            </ul>
+        </div>
+        <img class="auth-illustration" th:src="@{/img/auth-rota.svg}" src="/img/auth-rota.svg" alt="" width="600" height="240">
+        <p class="auth-place">Transporte público de Ourinhos, SP</p>
+    </section>
+
+    <main class="auth-panel">
+        <section class="auth-card">
+            <div class="auth-card-head">
+                <h1>Bem-vindo de volta</h1>
+                <p class="auth-subtitle">Entre na sua conta para continuar.</p>
+            </div>
+            <div class="sucesso" th:if="${sucessoCadastro}" th:text="${sucessoCadastro}" role="status"></div>
+            <div class="sucesso" th:if="${param.logout}" role="status">Você saiu do sistema com sucesso.</div>
+            <div class="erro" th:if="${param.erro}" role="alert">Email ou senha inválidos. Verifique os dados e tente novamente.</div>
+
+            <form class="auth-form" action="/login" th:action="@{/login}" method="post">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                <div class="field">
+                    <label for="username">Email</label>
+                    <div class="input-wrap">
+                        <svg class="icon icon-sm" aria-hidden="true"><use href="/img/icons.svg#i-mail"></use></svg>
+                        <input id="username" type="email" name="username" autocomplete="email" placeholder="voce@email.com" required>
+                    </div>
+                </div>
+                <div class="field">
+                    <label for="password">Senha</label>
+                    <div class="input-wrap">
+                        <svg class="icon icon-sm" aria-hidden="true"><use href="/img/icons.svg#i-lock"></use></svg>
+                        <input id="password" type="password" name="password" autocomplete="current-password" placeholder="Digite sua senha" required>
+                        <button class="password-toggle" type="button" data-password-toggle="password" aria-controls="password" aria-pressed="false">Mostrar</button>
+                    </div>
+                </div>
+                <button class="wp-button primary" type="submit">Entrar</button>
+            </form>
+
+            <div class="auth-visitor-box">
+                <a class="wp-button ghost auth-visitor-btn" href="/home" th:href="@{/home}">
+                    <svg class="icon icon-sm" aria-hidden="true"><use href="/img/icons.svg#i-map"></use></svg>
+                    Continuar sem login (acesso visitante)
+                </a>
+                <p class="auth-visitor-hint">Consulte linhas, paradas e comunicados oficiais sem precisar de conta.</p>
+            </div>
+
+            <div class="auth-link">Ainda não possui uma conta? <a href="/cadastro" th:href="@{/cadastro}">Criar conta</a></div>
+        </section>
+    </main>
+</div>
+<script th:src="@{/js/ui/shell.js}" src="/js/ui/shell.js"></script>
+</body>
+</html>

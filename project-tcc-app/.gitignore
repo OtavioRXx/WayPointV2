@@ -1,0 +1,30 @@
+# Entrega academica:
+# target/, .idea/ e o Maven Wrapper podem ser versionados neste projeto.
+# Segredos continuam protegidos no .gitignore da raiz do repositorio.
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+### IntelliJ IDEA ###
+*.iws
+*.iml
+*.ipr
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+build/
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+### VS Code ###
+.vscode/

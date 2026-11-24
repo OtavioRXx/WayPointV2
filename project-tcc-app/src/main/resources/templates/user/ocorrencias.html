@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="_csrf" th:content="${_csrf?.token}">
+    <meta name="_csrf_header" th:content="${_csrf?.headerName}">
+    <title>Ocorrências - WayPoint</title>
+    <meta name="theme-color" content="#0B2239">
+    <link rel="icon" type="image/svg+xml" th:href="@{/img/favicon.svg}" href="/img/favicon.svg">
+    <link rel="alternate icon" type="image/png" th:href="@{/img/IconeWaypoint.png}" href="/img/IconeWaypoint.png">
+    <link rel="stylesheet" th:href="@{/css/waypoint.css?v=3}" href="/css/waypoint.css?v=3">
+</head>
+<body th:data-user-id="${usuarioId}" th:data-authenticated="${autenticado != false}" th:data-user-type="${usuarioTipo}">
+<div class="app">
+    <aside th:replace="~{fragments/user-shell :: sidebar('ocorrencias')}"></aside>
+
+    <div class="app-main">
+        <header th:replace="~{fragments/user-shell :: topbar('Ocorrências', 'Veja somente problemas oficiais ativos no transporte.')}"></header>
+        <div id="mensagem" class="alert" role="status" aria-live="polite"></div>
+
+        <main class="content module-page">
+            <section class="panel">
+                <div class="panel-header">
+                    <div>
+                        <h2>Problemas ativos</h2>
+                        <p class="muted">Ocorrências encerradas permanecem no histórico administrativo.</p>
+                    </div>
+                    <div class="actions">
+                        <select id="linhaSelect" data-allow-empty="true" aria-label="Filtrar por linha"></select>
+                        <button class="primary" type="button" id="btnAtualizarOcorrencias">
+                            <svg class="icon icon-sm" aria-hidden="true"><use href="/img/icons.svg#i-refresh"></use></svg>
+                            Atualizar
+                        </button>
+                    </div>
+                </div>
+                <div id="ocorrenciasLista" class="result empty">Carregando ocorrências...</div>
+            </section>
+        </main>
+    </div>
+</div>
+<script th:src="@{/js/core/api.js}" src="/js/core/api.js"></script>
+<script th:src="@{/js/modules/navigation.js}" src="/js/modules/navigation.js"></script>
+<script th:src="@{/js/modules/ocorrencias.js}" src="/js/modules/ocorrencias.js"></script>
+<script th:src="@{/js/ui/shell.js}" src="/js/ui/shell.js"></script>
+</body>
+</html>

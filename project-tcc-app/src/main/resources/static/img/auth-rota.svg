@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 240" fill="none" role="img" aria-hidden="true">
+  <!-- Malha de ruas (decorativa) -->
+  <g stroke="#FFFFFF" stroke-opacity=".07" stroke-width="1">
+    <path d="M0 40h600M0 112h600M0 188h600M70 0v240M190 0v240M318 0v240M446 0v240M548 0v240"/>
+    <path d="M0 230 250 0M300 240 560 0" stroke-opacity=".05"/>
+  </g>
+  <!-- Trajeto completo -->
+  <path d="M40 188h112a18 18 0 0 0 18-18v-40a18 18 0 0 1 18-18h112a18 18 0 0 0 18-18V58a18 18 0 0 1 18-18h214"
+        stroke="#FFFFFF" stroke-opacity=".22" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Trecho já percorrido -->
+  <path d="M40 188h112a18 18 0 0 0 18-18v-40a18 18 0 0 1 18-18h112a18 18 0 0 0 18-18V94"
+        stroke="#56C47C" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Paradas -->
+  <g stroke-width="3">
+    <circle cx="40" cy="188" r="9" fill="#56C47C" stroke="#0B2239"/>
+    <circle cx="112" cy="188" r="7" fill="#0B2239" stroke="#56C47C"/>
+    <circle cx="232" cy="112" r="7" fill="#0B2239" stroke="#56C47C"/>
+    <circle cx="420" cy="40" r="7" fill="#0B2239" stroke="#FFFFFF" stroke-opacity=".45"/>
+    <circle cx="560" cy="40" r="9" fill="#0B2239" stroke="#FFFFFF" stroke-opacity=".7"/>
+  </g>
+  <!-- Você está aqui -->
+  <circle cx="318" cy="94" r="20" fill="#56C47C" fill-opacity=".18"/>
+  <path d="M318 98s-13-11.3-13-21.4a13 13 0 0 1 26 0C331 86.7 318 98 318 98Z" fill="#56C47C" transform="translate(0 -6)"/>
+  <circle cx="318" cy="70.6" r="4.6" fill="#0B2239"/>
+</svg>

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="_csrf" th:content="${_csrf?.token}">
+    <meta name="_csrf_header" th:content="${_csrf?.headerName}">
+    <title>Notificações - WayPoint</title>
+    <meta name="theme-color" content="#0B2239">
+    <link rel="icon" type="image/svg+xml" th:href="@{/img/favicon.svg}" href="/img/favicon.svg">
+    <link rel="alternate icon" type="image/png" th:href="@{/img/IconeWaypoint.png}" href="/img/IconeWaypoint.png">
+    <link rel="stylesheet" th:href="@{/css/waypoint.css?v=3}" href="/css/waypoint.css?v=3">
+</head>
+<body th:data-user-id="${usuarioId}" th:data-authenticated="${autenticado != false}" th:data-user-type="${usuarioTipo}">
+<div class="app">
+    <aside th:replace="~{fragments/user-shell :: sidebar('notificacoes')}"></aside>
+
+    <div class="app-main">
+        <header th:replace="~{fragments/user-shell :: topbar('Notificações', 'Acompanhe comunicados oficiais da administração e avisos do transporte.')}"></header>
+        <div id="mensagem" class="alert" role="status" aria-live="polite"></div>
+
+        <main class="content module-page">
+            <div class="visitor-banner" th:if="${autenticado == false}" role="note">
+                <div>
+                    <strong>Modo visitante — Comunicados públicos</strong>
+                    <p>Você está consultando os avisos oficiais publicados pela administração. Entre na sua conta para acompanhar notificações não lidas e alertas das suas linhas favoritas.</p>
+                </div>
+                <div class="visitor-banner-actions">
+                    <a class="wp-button primary" th:href="@{/login}" href="/login">Entrar</a>
+                    <a class="wp-button ghost" th:href="@{/cadastro}" href="/cadastro">Criar conta</a>
+                </div>
+            </div>
+
+            <section class="panel">
+                <div class="panel-header">
+                    <div>
+                        <h2 th:text="${autenticado == false} ? 'Comunicados da administração' : 'Minhas notificações'">Minhas notificações</h2>
+                        <p class="muted" th:text="${autenticado == false} ? 'Avisos oficiais vigentes ficam separados do histórico de comunicados anteriores.' : 'Ocorrências e avisos atuais ficam separados do histórico superado.'">Ocorrências e avisos atuais ficam separados do histórico superado.</p>
+                    </div>
+                    <div class="actions">
+                        <select id="filtroLida" aria-label="Filtro por leitura" th:if="${autenticado != false}">
+                            <option value="">Todas</option>
+                            <option value="false">Não lidas</option>
+                            <option value="true">Lidas</option>
+                        </select>
+                        <button class="primary" type="button" id="btnAtualizarNotificacoes">
+                            <svg class="icon icon-sm" aria-hidden="true"><use href="/img/icons.svg#i-refresh"></use></svg>
+                            Atualizar
+                        </button>
+                        <button class="danger" type="button" id="btnLimparHistorico" th:if="${autenticado != false}">Limpar histórico</button>
+                    </div>
+                </div>
+                <div id="notificacoesLista" class="stacked-result empty">Carregando notificações...</div>
+            </section>
+        </main>
+    </div>
+</div>
+<script th:src="@{/js/core/api.js}" src="/js/core/api.js"></script>
+<script th:src="@{/js/modules/navigation.js}" src="/js/modules/navigation.js"></script>
+<script th:src="@{/js/modules/notificacoes.js}" src="/js/modules/notificacoes.js"></script>
+<script th:src="@{/js/ui/shell.js}" src="/js/ui/shell.js"></script>
+</body>
+</html>

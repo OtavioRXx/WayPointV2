@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="_csrf" th:content="${_csrf?.token}">
+    <meta name="_csrf_header" th:content="${_csrf?.headerName}">
+    <title>Paradas - WayPoint</title>
+    <meta name="theme-color" content="#0B2239">
+    <link rel="icon" type="image/svg+xml" th:href="@{/img/favicon.svg}" href="/img/favicon.svg">
+    <link rel="alternate icon" type="image/png" th:href="@{/img/IconeWaypoint.png}" href="/img/IconeWaypoint.png">
+    <link rel="stylesheet" th:href="@{/css/waypoint.css?v=3}" href="/css/waypoint.css?v=3">
+</head>
+<body
+        th:data-user-id="${usuarioId}"
+        th:data-authenticated="${autenticado != false}"
+        th:data-user-type="${usuarioTipo}"
+        th:data-google-maps-api-key="${googleMapsApiKey}"
+        th:data-google-maps-map-id="${googleMapsMapId}">
+<div class="app">
+    <aside th:replace="~{fragments/user-shell :: sidebar('paradas')}"></aside>
+
+    <div class="app-main">
+        <header th:replace="~{fragments/user-shell :: topbar('Paradas e rota', 'Consulte a rota, a programação prevista e reporte a situação de uma parada.')}"></header>
+        <div id="mensagem" class="alert" role="status" aria-live="polite"></div>
+
+        <main class="content content-wide module-page">
+            <section class="panel route-toolbar">
+                <div>
+                    <h2>Escolha a rota</h2>
+                    <p class="muted">A ordem das paradas segue o cadastro oficial da linha.</p>
+                </div>
+                <div class="actions">
+                    <select id="linhaSelect" aria-label="Linha"></select>
+                    <div class="segmented" role="group" aria-label="Sentido da rota">
+                        <button id="btnIda" class="active" type="button" data-sentido="IDA">Ida</button>
+                        <button id="btnVolta" type="button" data-sentido="VOLTA">Volta</button>
+                    </div>
+                </div>
+            </section>
+
+            <div class="route-workspace">
+                <div class="map-column">
+                    <div class="map-wrapper">
+                        <div id="mapaParadas" class="map-area" role="region" aria-label="Mapa da rota selecionada"></div>
+                        <div id="mapaParadasStatus" class="map-status">Carregando mapa...</div>
+                    </div>
+                    <div class="map-legend" aria-label="Legenda do mapa">
+                        <span><i class="legend-dot start" aria-hidden="true"></i>Primeira parada</span>
+                        <span><i class="legend-dot stop" aria-hidden="true"></i>Parada do trajeto</span>
+                        <span><i class="legend-dot end" aria-hidden="true"></i>Última parada</span>
+                        <span><i class="legend-line ida" aria-hidden="true"></i>Ida</span>
+                        <span><i class="legend-line volta" aria-hidden="true"></i>Volta</span>
+                    </div>
+                </div>
+
+                <div class="route-aside">
+                    <section id="programacaoAtual" class="schedule-panel" aria-live="polite"></section>
+                    <section id="detalheParada" class="detail-panel hidden" aria-live="polite"></section>
+                    <section class="panel stops-panel" aria-labelledby="paradasTitulo">
+                        <div class="stops-head">
+                            <h2 id="paradasTitulo">Paradas do trajeto</h2>
+                            <p>Escolha uma parada para informar o que está acontecendo nela.</p>
+                        </div>
+                        <div id="paradasLista" class="route-cards"></div>
+                    </section>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+<script th:src="@{/js/core/api.js}" src="/js/core/api.js"></script>
+<script th:src="@{/js/modules/navigation.js}" src="/js/modules/navigation.js"></script>
+<script th:src="@{/js/modules/mapa.js}" src="/js/modules/mapa.js"></script>
+<script th:src="@{/js/modules/programacao.js}" src="/js/modules/programacao.js"></script>
+<script th:src="@{/js/modules/parada-imagens.js}" src="/js/modules/parada-imagens.js"></script>
+<script th:src="@{/js/modules/paradas.js}" src="/js/modules/paradas.js"></script>
+<script th:src="@{/js/ui/shell.js}" src="/js/ui/shell.js"></script>
+</body>
+</html>

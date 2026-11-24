@@ -1,0 +1,387 @@
+*{
+            margin:0;
+            padding:0;
+            box-sizing:border-box;
+            font-family:Arial, sans-serif;
+        }
+
+        body{
+            min-height:100vh;
+            background:
+                radial-gradient(circle at top left, rgba(217,70,239,0.14), transparent 34%),
+                #17172b;
+            color:white;
+        }
+
+        .page{
+            width:min(1240px, 100%);
+            margin:0 auto;
+            padding:28px;
+        }
+
+        .topbar,
+        .panel-header,
+        .toolbar{
+            display:flex;
+            justify-content:space-between;
+            align-items:flex-start;
+            gap:14px;
+        }
+
+        .topbar{
+            align-items:center;
+            margin-bottom:20px;
+        }
+
+        .brand{
+            color:#d946ef;
+            font-size:32px;
+            font-weight:800;
+        }
+
+        h1{
+            font-size:28px;
+            margin-top:4px;
+        }
+
+        h2{
+            font-size:21px;
+            margin-bottom:6px;
+        }
+
+        h3{
+            font-size:17px;
+            margin-bottom:12px;
+        }
+
+        .muted{
+            color:#d7d7ef;
+            line-height:1.45;
+        }
+
+        .actions,
+        .tabs,
+        .chips{
+            display:flex;
+            flex-wrap:wrap;
+            gap:10px;
+        }
+
+        .actions{
+            justify-content:flex-end;
+        }
+
+        .button,
+        button{
+            min-height:40px;
+            border:none;
+            border-radius:8px;
+            background:#3a3a5c;
+            color:white;
+            cursor:pointer;
+            display:inline-flex;
+            align-items:center;
+            justify-content:center;
+            padding:10px 14px;
+            text-decoration:none;
+            font-size:14px;
+            font-weight:bold;
+            white-space:nowrap;
+        }
+
+        .button:hover,
+        button:hover{
+            background:#4a4a72;
+        }
+
+        button:disabled{
+            cursor:not-allowed;
+            opacity:0.65;
+        }
+
+        .primary{
+            background:#d946ef;
+        }
+
+        .success{
+            background:#166534;
+        }
+
+        .danger{
+            background:#7f1d1d;
+        }
+
+        .ghost{
+            background:#30304f;
+            border:1px solid #46466f;
+        }
+
+        .panel{
+            background:rgba(37,37,65,0.92);
+            border:1px solid #3a3a5c;
+            border-radius:8px;
+            padding:22px;
+            margin-bottom:18px;
+            box-shadow:0 0 15px rgba(0,0,0,0.2);
+        }
+
+        .card{
+            background:#2b2b49;
+            border:1px solid #46466f;
+            border-radius:8px;
+            padding:16px;
+        }
+
+        .compact-card{
+            display:grid;
+            gap:12px;
+        }
+
+        .chip{
+            background:#30304f;
+            border:1px solid #46466f;
+            border-radius:8px;
+            color:#f5f3ff;
+            font-size:13px;
+            padding:8px 10px;
+        }
+
+        .alert{
+            display:none;
+            white-space:pre-line;
+            border-radius:8px;
+            margin-bottom:16px;
+            padding:12px 14px;
+        }
+
+        .alert.ok{
+            display:block;
+            background:#143b28;
+            border:1px solid #23764c;
+        }
+
+        .alert.error{
+            display:block;
+            background:#451a1a;
+            border:1px solid #b91c1c;
+        }
+
+        .tabs{
+            margin-bottom:16px;
+        }
+
+        .tab{
+            background:#30304f;
+            border:1px solid #46466f;
+        }
+
+        .tab.active{
+            background:#d946ef;
+            border-color:#d946ef;
+        }
+
+        .view{
+            display:none;
+        }
+
+        .view.active{
+            display:block;
+        }
+
+        .grid{
+            display:grid;
+            grid-template-columns:repeat(auto-fit, minmax(240px, 1fr));
+            gap:14px;
+        }
+
+        form{
+            display:grid;
+            gap:10px;
+        }
+
+        label{
+            color:#f5f3ff;
+            font-size:14px;
+            font-weight:bold;
+        }
+
+        input,
+        select,
+        textarea{
+            width:100%;
+            min-height:40px;
+            border:1px solid #46466f;
+            border-radius:8px;
+            background:#30304f;
+            color:white;
+            padding:10px;
+            font-size:14px;
+        }
+
+        textarea{
+            min-height:88px;
+            resize:vertical;
+        }
+
+        .result{
+            margin-top:14px;
+        }
+
+        .table-wrap{
+            overflow-x:auto;
+            border:1px solid #3a3a5c;
+            border-radius:8px;
+        }
+
+        table{
+            width:100%;
+            min-width:760px;
+            border-collapse:collapse;
+        }
+
+        th,
+        td{
+            border-bottom:1px solid #3a3a5c;
+            padding:11px;
+            text-align:left;
+            vertical-align:top;
+        }
+
+        th{
+            color:#d946ef;
+            font-size:13px;
+            text-transform:uppercase;
+        }
+
+        td{
+            color:#f5f3ff;
+            font-size:14px;
+        }
+
+        .row-actions{
+            display:flex;
+            flex-wrap:wrap;
+            gap:8px;
+        }
+
+        .empty{
+            background:#30304f;
+            border:1px solid #46466f;
+            border-radius:8px;
+            color:#d7d7ef;
+            padding:14px;
+        }
+
+        .map-shell{
+            display:grid;
+            gap:14px;
+        }
+
+        .map-canvas{
+            width:100%;
+            min-height:460px;
+            border:1px solid #46466f;
+            border-radius:8px;
+            background:#20203a;
+        }
+
+        .route-layout{
+            display:grid;
+            grid-template-columns:minmax(0, 1fr) 300px;
+            gap:14px;
+            align-items:start;
+        }
+
+        .route-stops{
+            max-height:460px;
+            overflow:auto;
+        }
+
+        .route-stops ol{
+            display:grid;
+            gap:8px;
+            list-style-position:inside;
+        }
+
+        .route-stops li{
+            background:#30304f;
+            border:1px solid #46466f;
+            border-radius:8px;
+            color:#f5f3ff;
+            padding:10px;
+        }
+
+        .route-summary{
+            display:flex;
+            flex-wrap:wrap;
+            gap:10px;
+        }
+
+        .segmented{
+            display:inline-flex;
+            gap:0;
+            border:1px solid #46466f;
+            border-radius:8px;
+            overflow:hidden;
+        }
+
+        .segmented button{
+            border-radius:0;
+            border:0;
+        }
+
+        .segmented button.active{
+            background:#d946ef;
+        }
+
+        .map-pin{
+            align-items:center;
+            background:#d946ef;
+            border:2px solid white;
+            border-radius:999px;
+            color:white;
+            display:flex;
+            font-size:12px;
+            font-weight:bold;
+            height:30px;
+            justify-content:center;
+            width:30px;
+        }
+
+        .diagnostic{
+            color:#bfc0df;
+            font-size:12px;
+            margin-top:8px;
+        }
+
+        .status-line{
+            color:#d7d7ef;
+            font-size:13px;
+        }
+
+        @media (max-width: 740px){
+            .page{
+                padding:16px;
+            }
+
+            .topbar,
+            .panel-header,
+            .toolbar{
+                flex-direction:column;
+            }
+
+            .actions,
+            .actions > *,
+            .button,
+            button{
+                width:100%;
+            }
+
+            .route-layout{
+                grid-template-columns:1fr;
+            }
+
+            .map-canvas{
+                min-height:360px;
+            }
+        }

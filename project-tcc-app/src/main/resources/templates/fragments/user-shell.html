@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<!-- Menu lateral: mesmos destinos da navegação original (Início, Linhas, Paradas, Reportes, Notificações e, para ADMIN, Painel Admin). -->
+<aside class="sidebar" id="sidebar" th:fragment="sidebar(ativo)" aria-label="Menu principal">
+    <div class="sidebar-head">
+        <a class="sidebar-brand" th:href="@{/home}" href="/home" aria-label="WayPoint - início">
+            <img th:src="@{/img/LogoWaypoint-claro.png}" src="/img/LogoWaypoint-claro.png" alt="WayPoint" width="150" height="54">
+            <img class="brand-mark" th:src="@{/img/favicon.svg}" src="/img/favicon.svg" alt="WayPoint" width="40" height="40">
+        </a>
+        <button class="icon-button sidebar-close" type="button" data-nav-close aria-label="Fechar menu">
+            <svg class="icon" aria-hidden="true"><use href="/img/icons.svg#i-close"></use></svg>
+        </button>
+    </div>
+
+    <nav class="sidebar-nav" aria-label="Navegação principal">
+        <a class="nav-item" th:classappend="${ativo == 'home'} ? ' active'" th:aria-current="${ativo == 'home'} ? 'page'" th:href="@{/home}" href="/home" title="Início">
+            <span class="nav-icon"><svg class="icon" aria-hidden="true"><use href="/img/icons.svg#i-home"></use></svg></span>
+            <span>Início</span>
+        </a>
+        <a class="nav-item" th:classappend="${ativo == 'linhas'} ? ' active'" th:aria-current="${ativo == 'linhas'} ? 'page'" th:href="@{/linhas}" href="/linhas" title="Linhas">
+            <span class="nav-icon"><svg class="icon" aria-hidden="true"><use href="/img/icons.svg#i-route"></use></svg></span>
+            <span>Linhas</span>
+        </a>
+        <a class="nav-item" th:classappend="${ativo == 'paradas'} ? ' active'" th:aria-current="${ativo == 'paradas'} ? 'page'" th:href="@{/paradas}" href="/paradas" title="Paradas e mapa">
+            <span class="nav-icon"><svg class="icon" aria-hidden="true"><use href="/img/icons.svg#i-map"></use></svg></span>
+            <span>Paradas e mapa</span>
+        </a>
+        <a class="nav-item" th:classappend="${ativo == 'reportes'} ? ' active'" th:aria-current="${ativo == 'reportes'} ? 'page'" th:href="@{/reportes}" href="/reportes" title="Reportes">
+            <span class="nav-icon"><svg class="icon" aria-hidden="true"><use href="/img/icons.svg#i-chat"></use></svg></span>
+            <span>Reportes</span>
+        </a>
+        <a class="nav-item notification-nav-link" th:classappend="${ativo == 'notificacoes'} ? ' active'" th:aria-current="${ativo == 'notificacoes'} ? 'page'" th:href="@{/notificacoes}" href="/notificacoes" title="Notificações" data-notification-nav>
+            <span class="nav-icon"><svg class="icon" aria-hidden="true"><use href="/img/icons.svg#i-bell"></use></svg></span>
+            <span>Notificações</span>
+            <span class="nav-badge hidden" data-notification-badge aria-label="Notificações pendentes"></span>
+        </a>
+
+        <th:block th:if="${admin}">
+            <p class="sidebar-label">Administração</p>
+            <a class="nav-item" th:classappend="${ativo == 'admin'} ? ' active'" th:aria-current="${ativo == 'admin'} ? 'page'" th:href="@{/painel-testes}" href="/painel-testes" title="Painel Admin">
+                <span class="nav-icon"><svg class="icon" aria-hidden="true"><use href="/img/icons.svg#i-shield"></use></svg></span>
+                <span>Painel Admin</span>
+            </a>
+        </th:block>
+    </nav>
+
+    <div class="sidebar-foot">
+        <strong>Ourinhos, SP</strong>
+        Transporte público com informação oficial e colaborativa.
+    </div>
+</aside>
+
+<!-- Cabeçalho da página: título, descrição, conta (ou acesso visitante). -->
+<header class="topbar" th:fragment="topbar(titulo, descricao)">
+    <button class="icon-button nav-toggle" type="button" data-nav-toggle aria-controls="sidebar" aria-expanded="false" aria-label="Abrir menu">
+        <svg class="icon" aria-hidden="true"><use href="/img/icons.svg#i-menu"></use></svg>
+    </button>
+    <a class="topbar-brand" th:href="@{/home}" href="/home" aria-label="WayPoint - início">
+        <img th:src="@{/img/LogoWaypoint-recortada.png}" src="/img/LogoWaypoint-recortada.png" alt="WayPoint" width="112" height="41">
+    </a>
+
+    <div class="topbar-title">
+        <h1 th:text="${titulo}">WayPoint</h1>
+        <p th:text="${descricao}">Consulta do sistema</p>
+    </div>
+
+    <div class="topbar-account" th:if="${autenticado != false}">
+        <div class="account-summary" aria-label="Dados da conta">
+            <span class="account-avatar" aria-hidden="true"><svg class="icon icon-sm"><use href="/img/icons.svg#i-user"></use></svg></span>
+            <span class="account-text">
+                <strong th:text="${usuarioNome}">Usuário</strong>
+                <span th:text="${admin} ? 'Administrador' : 'Passageiro'">Perfil</span>
+            </span>
+        </div>
+        <form th:action="@{/logout}" action="/logout" method="post">
+            <button class="wp-button ghost logout-button" type="submit" title="Sair">
+                <svg class="icon icon-sm" aria-hidden="true"><use href="/img/icons.svg#i-logout"></use></svg>
+                <span>Sair</span>
+            </button>
+        </form>
+    </div>
+
+    <div class="topbar-account topbar-visitor" th:if="${autenticado == false}">
+        <span class="visitor-pill" aria-label="Modo visitante">Visitante</span>
+        <a class="wp-button ghost" th:href="@{/login}" href="/login">
+            <svg class="icon icon-sm" aria-hidden="true"><use href="/img/icons.svg#i-login"></use></svg>
+            <span>Entrar</span>
+        </a>
+        <a class="wp-button primary" th:href="@{/cadastro}" href="/cadastro">
+            <svg class="icon icon-sm" aria-hidden="true"><use href="/img/icons.svg#i-user-plus"></use></svg>
+            <span>Criar conta</span>
+        </a>
+    </div>
+</header>
+
+</body>
+</html>

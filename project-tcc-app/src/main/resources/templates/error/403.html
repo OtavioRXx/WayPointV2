@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Acesso não permitido | WayPoint</title>
+    <meta name="theme-color" content="#0B2239">
+    <link rel="icon" type="image/svg+xml" th:href="@{/img/favicon.svg}" href="/img/favicon.svg">
+    <link rel="alternate icon" type="image/png" th:href="@{/img/IconeWaypoint.png}" href="/img/IconeWaypoint.png">
+    <link rel="stylesheet" th:href="@{/css/waypoint.css?v=3}" href="/css/waypoint.css?v=3">
+</head>
+<body>
+<main class="error-page">
+    <section class="error-card" aria-labelledby="error-title">
+        <img class="error-logo" th:src="@{/img/LogoWaypoint-recortada.png}" src="/img/LogoWaypoint-recortada.png" alt="WayPoint" width="140" height="51">
+        <span class="error-symbol" aria-hidden="true"><svg class="icon icon-lg"><use href="/img/icons.svg#i-lock"></use></svg></span>
+        <span class="error-code">Erro 403</span>
+        <h1 id="error-title">Acesso não permitido</h1>
+        <p>Você não possui permissão para acessar esta página.</p>
+        <a class="wp-button primary" th:href="@{/home}" href="/home">
+            <svg class="icon icon-sm" aria-hidden="true"><use href="/img/icons.svg#i-arrow-left"></use></svg>
+            Voltar para Home
+        </a>
+    </section>
+</main>
+</body>
+</html>

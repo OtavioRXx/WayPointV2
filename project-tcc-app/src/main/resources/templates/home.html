@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="_csrf" th:content="${_csrf?.token}">
+    <meta name="_csrf_header" th:content="${_csrf?.headerName}">
+    <title>WayPoint | Início</title>
+    <script>if (window.location.protocol === 'file:') window.location.replace('http://localhost:8080/home');</script>
+    <meta name="theme-color" content="#0B2239">
+    <link rel="icon" type="image/svg+xml" th:href="@{/img/favicon.svg}" href="/img/favicon.svg">
+    <link rel="alternate icon" type="image/png" th:href="@{/img/IconeWaypoint.png}" href="/img/IconeWaypoint.png">
+    <link rel="stylesheet" th:href="@{/css/waypoint.css?v=3}" href="/css/waypoint.css?v=3">
+</head>
+<body
+        th:data-user-id="${usuarioId}"
+        th:data-authenticated="${autenticado != false}"
+        th:data-user-type="${usuarioTipo}">
+<div class="app">
+    <aside th:replace="~{fragments/user-shell :: sidebar('home')}"></aside>
+
+    <div class="app-main">
+        <header th:replace="~{fragments/user-shell :: topbar('Início', 'Painel do transporte público com linhas, paradas, avisos oficiais e reportes recentes.')}"></header>
+        <div id="mensagem" class="alert" role="status" aria-live="polite"></div>
+
+        <main class="content module-page home-redesign">
+            <!-- Hero principal: apresentação moderna, busca rápida de linhas e indicadores em tempo real -->
+            <section class="home-hero" aria-label="Resumo do WayPoint">
+                <div class="home-hero-main">
+                    <div class="home-hero-eyebrow">
+                        <span class="live-dot" aria-hidden="true"></span>
+                        <span>Ourinhos, SP • Monitoramento do transporte público</span>
+                        <span class="hero-role-pill" th:if="${autenticado == false}">Acesso visitante</span>
+                        <span class="hero-role-pill is-auth" th:if="${autenticado != false}" th:text="${admin} ? 'Administrador' : 'Passageiro conectado'">Passageiro conectado</span>
+                    </div>
+
+                    <h2 class="home-hero-title" th:if="${autenticado != false}">
+                        Olá, <span th:text="${usuarioNome}">Passageiro</span>. Sua rota e os avisos do transporte em um só lugar.
+                    </h2>
+                    <h2 class="home-hero-title" th:if="${autenticado == false}">
+                        Acompanhe linhas, paradas e avisos do transporte público em tempo real.
+                    </h2>
+
+                    <p class="home-hero-subtitle" th:if="${autenticado != false}">
+                        Consulte a situação atual de cada linha, visualize paradas no mapa, leia comunicados da administração e acompanhe os reportes da comunidade.
+                    </p>
+                    <p class="home-hero-subtitle" th:if="${autenticado == false}">
+                        Explore livremente linhas, rotas no mapa, horários e comunicados oficiais. Crie uma conta quando quiser favoritar linhas e contribuir com reportes.
+                    </p>
+
+                    <div class="hero-search-bar">
+                        <label class="hero-search-input" for="homeBuscaLinha">
+                            <svg class="icon icon-sm" aria-hidden="true"><use href="/img/icons.svg#i-search"></use></svg>
+                            <input id="homeBuscaLinha" type="search" placeholder="Buscar linha por código ou nome..." autocomplete="off">
+                        </label>
+                        <div class="hero-cta-group">
+                            <a class="wp-button primary hero-cta-primary" th:href="@{/paradas}" href="/paradas">
+                                <svg class="icon icon-sm" aria-hidden="true"><use href="/img/icons.svg#i-map"></use></svg>
+                                Ver paradas no mapa
+                            </a>
+                            <a class="wp-button hero-cta-secondary" th:href="@{/linhas}" href="/linhas">
+                                <svg class="icon icon-sm" aria-hidden="true"><use href="/img/icons.svg#i-route"></use></svg>
+                                Todas as linhas
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="home-hero-kpis" aria-label="Indicadores do sistema">
+                    <a class="hero-kpi" th:href="@{/linhas}" href="/linhas">
+                        <span class="hero-kpi-icon is-green"><svg class="icon" aria-hidden="true"><use href="/img/icons.svg#i-bus"></use></svg></span>
+                        <div>
+                            <span class="hero-kpi-label">Linhas normais</span>
+                            <strong id="kpiLinhasNormais" class="tabular">--</strong>
+                            <span id="kpiLinhasDetalhe" class="hero-kpi-sub">Carregando situação...</span>
+                        </div>
+                    </a>
+
+                    <a id="kpiNotificacoesCard" class="hero-kpi hero-kpi-notificacoes" th:href="@{/notificacoes}" href="/notificacoes">
+                        <span class="hero-kpi-icon is-amber"><svg class="icon" aria-hidden="true"><use href="/img/icons.svg#i-bell"></use></svg></span>
+                        <div>
+                            <span class="hero-kpi-label" th:text="${autenticado == false} ? 'Comunicados ativos' : 'Notificações pendentes'">Notificações pendentes</span>
+                            <strong id="kpiNotificacoesValor" class="tabular">--</strong>
+                            <span id="kpiNotificacoesDetalhe" class="hero-kpi-sub">Verificando avisos...</span>
+                        </div>
+                    </a>
+
+                    <a class="hero-kpi" th:href="@{/reportes}" href="/reportes">
+                        <span class="hero-kpi-icon is-blue"><svg class="icon" aria-hidden="true"><use href="/img/icons.svg#i-chat"></use></svg></span>
+                        <div>
+                            <span class="hero-kpi-label">Reportes recentes</span>
+                            <strong id="kpiReportesValor" class="tabular">--</strong>
+                            <span id="kpiReportesDetalhe" class="hero-kpi-sub">Últimos 20 minutos</span>
+                        </div>
+                    </a>
+
+                    <a class="hero-kpi" th:if="${autenticado != false}" th:href="@{/linhas}" href="/linhas">
+                        <span class="hero-kpi-icon is-navy"><svg class="icon" aria-hidden="true"><use href="/img/icons.svg#i-star"></use></svg></span>
+                        <div>
+                            <span class="hero-kpi-label">Linhas favoritas</span>
+                            <strong id="kpiFavoritasValor" class="tabular">--</strong>
+                            <span id="kpiFavoritasDetalhe" class="hero-kpi-sub">Acompanhamento ativo</span>
+                        </div>
+                    </a>
+
+                    <a class="hero-kpi hero-kpi-visitor" th:if="${autenticado == false}" th:href="@{/cadastro}" href="/cadastro">
+                        <span class="hero-kpi-icon is-green"><svg class="icon" aria-hidden="true"><use href="/img/icons.svg#i-user-plus"></use></svg></span>
+                        <div>
+                            <span class="hero-kpi-label">Conta colaborativa</span>
+                            <strong>Entrar / Criar</strong>
+                            <span class="hero-kpi-sub">Favorite linhas e envie reportes</span>
+                        </div>
+                    </a>
+                </div>
+            </section>
+
+            <!-- Destaque de comunicados recentes da administração (exibido quando há avisos ativos) -->
+            <section id="spotlightComunicados" class="panel spotlight-panel hidden" aria-labelledby="spotlightTitulo" aria-live="polite"></section>
+
+            <!-- Grade principal: Quadro de linhas + Coluna lateral de notificações e comunidade -->
+            <div class="dashboard home-workspace">
+                <div class="dashboard-main">
+                    <section class="panel home-board-panel" aria-labelledby="situacaoTitulo">
+                        <div class="panel-header">
+                            <div>
+                                <h2 id="situacaoTitulo">Situação das linhas</h2>
+                                <p class="muted" th:text="${autenticado == false} ? 'Status oficial atualizado das linhas disponíveis em circulação.' : 'Status oficial de cada linha. Suas favoritas aparecem destacadas primeiro.'">
+                                    Status oficial de cada linha. Suas favoritas aparecem primeiro.
+                                </p>
+                            </div>
+                            <div class="home-board-controls">
+                                <div class="filter-pills" role="group" aria-label="Filtrar linhas">
+                                    <button type="button" class="filter-pill active" data-home-filter="todas">Todas</button>
+                                    <button type="button" class="filter-pill" data-home-filter="atencao">Com atenção</button>
+                                    <button type="button" class="filter-pill" data-home-filter="favoritas" th:if="${autenticado != false}">Favoritas</button>
+                                </div>
+                                <button type="button" id="btnAtualizarInicio">
+                                    <svg class="icon icon-sm" aria-hidden="true"><use href="/img/icons.svg#i-refresh"></use></svg>
+                                    Atualizar
+                                </button>
+                            </div>
+                        </div>
+                        <div id="situacaoLinhas" aria-live="polite">
+                            <div class="loading-block" aria-busy="true" aria-label="Carregando situação das linhas"></div>
+                        </div>
+                    </section>
+
+                    <!-- Acesso rápido às funcionalidades -->
+                    <section class="panel" aria-labelledby="atalhosTitulo">
+                        <div class="panel-header">
+                            <div>
+                                <h2 id="atalhosTitulo">Acesso rápido</h2>
+                                <p class="muted">Navegue diretamente para os principais módulos do WayPoint.</p>
+                            </div>
+                        </div>
+                        <nav class="home-actions" aria-label="Principais ações">
+                            <a class="home-action" th:href="@{/linhas}" href="/linhas">
+                                <span class="nav-icon"><svg class="icon" aria-hidden="true"><use href="/img/icons.svg#i-route"></use></svg></span>
+                                <strong>Linhas</strong>
+                                <span th:text="${autenticado == false} ? 'Consulte todas as linhas disponíveis e o status atual de cada trajeto.' : 'Veja a situação de cada linha e favorite as que você utiliza no dia a dia.'">Veja a situação de cada linha e favorite as que você usa.</span>
+                            </a>
+                            <a class="home-action" th:href="@{/paradas}" href="/paradas">
+                                <span class="nav-icon"><svg class="icon" aria-hidden="true"><use href="/img/icons.svg#i-map"></use></svg></span>
+                                <strong>Paradas e mapa</strong>
+                                <span>Acompanhe a rota no mapa por sentido, ordem das paradas e programação prevista.</span>
+                            </a>
+                            <a class="home-action" th:href="@{/reportes}" href="/reportes">
+                                <span class="nav-icon"><svg class="icon" aria-hidden="true"><use href="/img/icons.svg#i-chat"></use></svg></span>
+                                <strong>Reportes</strong>
+                                <span>Confira o que outros passageiros estão informando nas paradas agora.</span>
+                            </a>
+                            <a class="home-action" th:href="@{/notificacoes}" href="/notificacoes">
+                                <span class="nav-icon"><svg class="icon" aria-hidden="true"><use href="/img/icons.svg#i-bell"></use></svg></span>
+                                <strong>Notificações</strong>
+                                <span th:text="${autenticado == false} ? 'Leia avisos gerais, feriados e comunicados publicados pela administração.' : 'Acompanhe avisos gerais da administração e alertas das suas linhas favoritas.'">Avisos oficiais e comunicados do transporte.</span>
+                            </a>
+                        </nav>
+                    </section>
+                </div>
+
+                <aside class="dashboard-side" aria-label="Resumo lateral">
+                    <section class="panel side-card" aria-labelledby="avisosTitulo">
+                        <div class="side-card-head">
+                            <h2 id="avisosTitulo" th:text="${autenticado == false} ? 'Comunicados oficiais' : 'Central de notificações'">Central de notificações</h2>
+                            <a th:href="@{/notificacoes}" href="/notificacoes">Ver todas</a>
+                        </div>
+                        <div id="resumoNotificacoes" aria-live="polite">
+                            <div class="loading-block loading-sm" aria-busy="true"></div>
+                        </div>
+                    </section>
+
+                    <section class="panel side-card" aria-labelledby="recentesTitulo">
+                        <div class="side-card-head">
+                            <h2 id="recentesTitulo">Reportes recentes</h2>
+                            <a th:href="@{/reportes}" href="/reportes">Ver feed</a>
+                        </div>
+                        <div id="resumoReportes" aria-live="polite">
+                            <div class="loading-block loading-md" aria-busy="true"></div>
+                        </div>
+                    </section>
+
+                    <section class="panel side-card visitor-cta-card" th:if="${autenticado == false}" aria-labelledby="visitorCtaTitulo">
+                        <span class="eyebrow">Participe da comunidade</span>
+                        <h2 id="visitorCtaTitulo">Desbloqueie recursos pessoais</h2>
+                        <p class="muted">Com uma conta gratuita você favorita linhas, recebe alertas personalizados, marca avisos como lidos e envia reportes das paradas.</p>
+                        <div class="visitor-cta-actions">
+                            <a class="wp-button primary" th:href="@{/cadastro}" href="/cadastro">Criar conta</a>
+                            <a class="wp-button ghost" th:href="@{/login}" href="/login">Já tenho conta</a>
+                        </div>
+                    </section>
+
+                    <section class="panel side-card" th:if="${autenticado != false}" aria-labelledby="guiaTitulo">
+                        <div class="side-card-head">
+                            <h2 id="guiaTitulo">Como aproveitar melhor</h2>
+                        </div>
+                        <ol class="guide-compact" role="list">
+                            <li><span class="guide-number">1</span><div><strong>Favorite suas linhas</strong><span>Receba avisos e alertas direto em Notificações.</span></div></li>
+                            <li><span class="guide-number">2</span><div><strong>Acompanhe a rota</strong><span>Consulte paradas e previsão da circular no mapa.</span></div></li>
+                            <li><span class="guide-number">3</span><div><strong>Envie um reporte</strong><span>Ajude outros passageiros informando o que viu na parada.</span></div></li>
+                        </ol>
+                    </section>
+                </aside>
+            </div>
+
+            <section class="institutional-band" aria-label="Sobre o WayPoint">
+                <img class="institutional-logo" th:src="@{/img/LogoWaypoint-claro.png}" src="/img/LogoWaypoint-claro.png" alt="WayPoint" width="132" height="48">
+                <div>
+                    <p>Sistema colaborativo de transporte público desenvolvido para facilitar o acesso a informações sobre linhas, paradas, horários, avisos e reportes da comunidade.</p>
+                    <strong>Trabalho de Conclusão de Curso - Desenvolvimento de Sistemas.</strong>
+                </div>
+            </section>
+        </main>
+    </div>
+</div>
+<script th:src="@{/js/core/api.js}" src="/js/core/api.js"></script>
+<script th:src="@{/js/modules/navigation.js}" src="/js/modules/navigation.js"></script>
+<script th:src="@{/js/modules/inicio.js}" src="/js/modules/inicio.js"></script>
+<script th:src="@{/js/ui/shell.js}" src="/js/ui/shell.js"></script>
+</body>
+</html>

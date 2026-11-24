@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="_csrf" th:content="${_csrf?.token}">
+    <meta name="_csrf_header" th:content="${_csrf?.headerName}">
+    <title>Painel de Testes - WayPoint</title>
+
+    <script>
+        if (window.location.protocol === 'file:') {
+            window.location.replace('http://localhost:8080/painel-testes');
+        }
+    </script>
+    <meta name="theme-color" content="#0B2239">
+    <link rel="icon" type="image/svg+xml" th:href="@{/img/favicon.svg}" href="/img/favicon.svg">
+    <link rel="alternate icon" type="image/png" th:href="@{/img/IconeWaypoint.png}" href="/img/IconeWaypoint.png">
+    <link rel="stylesheet" th:href="@{/css/waypoint.css?v=3}" href="/css/waypoint.css?v=3">
+</head>
+<body
+        th:data-user-id="${usuarioId}"
+        th:data-user-name="${usuarioNome}"
+        th:data-user-email="${usuarioEmail}"
+        th:data-user-type="${usuarioTipo}"
+        th:data-user-admin="${admin}"
+        th:data-authenticated="${autenticado != false}"
+        th:data-google-maps-api-key="${googleMapsApiKey}"
+        th:data-google-maps-map-id="${googleMapsMapId}"
+        th:classappend="${admin} ? ' admin-body' : ''">
+
+<div class="app">
+    <aside th:replace="~{fragments/user-shell :: sidebar('admin')}"></aside>
+
+    <div class="app-main">
+    <header class="topbar">
+        <button class="icon-button nav-toggle" type="button" data-nav-toggle aria-controls="sidebar" aria-expanded="false" aria-label="Abrir menu">
+            <svg class="icon" aria-hidden="true"><use href="/img/icons.svg#i-menu"></use></svg>
+        </button>
+        <a class="topbar-brand" th:href="@{/home}" href="/home" aria-label="WayPoint - início"><img th:src="@{/img/LogoWaypoint-recortada.png}" src="/img/LogoWaypoint-recortada.png" alt="WayPoint" width="112" height="41"></a>
+        <div class="topbar-title">
+            <h1 th:text="${admin} ? 'Painel administrativo' : 'Encontre seu caminho'">Encontre seu caminho</h1>
+            <p th:text="${admin} ? 'Gerencie as informações do transporte e mantenha os dados do WayPoint atualizados.' : 'Consulte linhas, rotas, ocorrências e contribua com informações da sua viagem.'">Consulte linhas, rotas, ocorrências e contribua com informações da sua viagem.</p>
+        </div>
+
+        <div class="topbar-account">
+            <div class="account-summary" aria-label="Dados da conta">
+                <span class="account-avatar" aria-hidden="true"><svg class="icon icon-sm"><use href="/img/icons.svg#i-shield"></use></svg></span>
+                <span class="account-text">
+                    <strong th:text="${usuarioNome}">Usuario</strong>
+                    <span th:text="${admin} ? 'Administrador' : 'Passageiro'">Perfil</span>
+                </span>
+            </div>
+            <form action="/logout" th:action="@{/logout}" method="post">
+                <button class="wp-button ghost logout-button" type="submit" title="Sair">
+                    <svg class="icon icon-sm" aria-hidden="true"><use href="/img/icons.svg#i-logout"></use></svg>
+                    <span>Sair</span>
+                </button>
+            </form>
+        </div>
+    </header>
+
+    <div id="mensagem" class="alert"></div>
+
+    <div class="content module-page">
+    <section class="admin-overview" th:if="${admin}" aria-label="Visão geral administrativa">
+        <div class="admin-overview-title">
+            <h2>Visão geral do transporte</h2>
+            <p class="muted">Totais calculados a partir dos dados cadastrados no WayPoint.</p>
+        </div>
+        <div class="admin-kpis">
+            <div class="admin-kpi"><svg class="icon" aria-hidden="true"><use href="/img/icons.svg#i-route"></use></svg><span>Linhas</span><strong id="adminTotalLinhas">-</strong></div>
+            <div class="admin-kpi"><svg class="icon" aria-hidden="true"><use href="/img/icons.svg#i-pin"></use></svg><span>Paradas</span><strong id="adminTotalParadas">-</strong></div>
+            <div class="admin-kpi"><svg class="icon" aria-hidden="true"><use href="/img/icons.svg#i-alert"></use></svg><span>Ocorrências ativas</span><strong id="adminTotalOcorrencias">-</strong></div>
+            <div class="admin-kpi"><svg class="icon" aria-hidden="true"><use href="/img/icons.svg#i-chat"></use></svg><span>Reportes recentes</span><strong id="adminTotalReportes">-</strong></div>
+            <div class="admin-kpi"><svg class="icon" aria-hidden="true"><use href="/img/icons.svg#i-bell"></use></svg><span>Notificações</span><strong id="adminTotalNotificacoes">-</strong></div>
+            <div class="admin-kpi"><svg class="icon" aria-hidden="true"><use href="/img/icons.svg#i-users"></use></svg><span>Usuários</span><strong id="adminTotalUsuarios">-</strong></div>
+        </div>
+    </section>
+
+    <section class="panel">
+        <div class="toolbar">
+            <div>
+                <h2>Qual linha você quer consultar?</h2>
+                <p class="muted">Escolha uma linha uma vez e use-a nas consultas abaixo.</p>
+            </div>
+            <div class="actions">
+                <select id="linhaGlobalSelect" data-linha-select aria-label="Escolha uma linha"></select>
+                <button class="primary" type="button" id="btnAtualizarLinhas">
+                    <svg class="icon icon-sm" aria-hidden="true"><use href="/img/icons.svg#i-refresh"></use></svg>
+                    Atualizar opções
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <nav class="tabs" aria-label="Escolha o que você quer fazer">
+        <button class="tab active" type="button" data-view="linhas">Linhas</button>
+        <button class="tab" type="button" data-view="paradas" th:text="${admin} ? 'Paradas' : 'Rotas'">Rotas</button>
+        <button class="tab" type="button" data-view="ocorrencias" th:if="${admin}">Ocorrências</button>
+        <button class="tab" type="button" data-view="reportes">Reportes</button>
+        <button class="tab" type="button" data-view="favoritos" th:if="${!admin}">Favoritos</button>
+        <button class="tab" type="button" data-view="notificacoes">Notificações</button>
+        <button class="tab" type="button" data-view="usuarios" th:if="${admin}">Usuários</button>
+    </nav>
+
+    <main class="views">
+        <section id="view-linhas" class="view active">
+            <div class="panel">
+                <div class="panel-header">
+                    <div>
+                        <h2>Linhas de transporte</h2>
+                        <p class="muted">Encontre uma linha e confira rapidamente o que está acontecendo com ela.</p>
+                    </div>
+                    <button class="primary" type="button" onclick="carregarLinhas()">Atualizar linhas</button>
+                </div>
+
+                <form id="formLinha" class="card" th:if="${admin}">
+                    <h3>Cadastrar linha</h3>
+                    <div class="grid">
+                        <div>
+                            <label for="linhaCodigo">Código</label>
+                            <input id="linhaCodigo" name="codigo" maxlength="20" required>
+                        </div>
+                        <div>
+                            <label for="linhaNome">Nome</label>
+                            <input id="linhaNome" name="nome" maxlength="100" required>
+                        </div>
+                        <div>
+                            <label for="linhaStatus">Status</label>
+                            <select id="linhaStatus" name="status">
+                                <option value="NORMAL">NORMAL</option>
+                                <option value="ATRASADA">ATRASADA</option>
+                                <option value="LOTADA">LOTADA</option>
+                                <option value="INTERROMPIDA">INTERROMPIDA</option>
+                                <option value="UNIFICADA">UNIFICADA</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button class="success" type="submit">Salvar linha</button>
+                </form>
+
+                <div id="linhasResultado" class="result empty">As linhas disponíveis aparecerão aqui. Selecione uma para continuar.</div>
+            </div>
+        </section>
+
+        <section id="view-paradas" class="view">
+            <div class="panel">
+                <div class="panel-header">
+                    <div>
+                        <h2 th:text="${admin} ? 'Paradas' : 'Rota da circular'">Rota da circular</h2>
+                        <p class="muted" th:if="${admin}">Consulte e cadastre paradas por linha e sentido.</p>
+                        <p class="muted" th:if="${!admin}">Visualize a rota da linha no mapa por sentido.</p>
+                    </div>
+                    <div class="actions">
+                        <select id="paradasConsultaLinha" data-linha-select aria-label="Linha para consulta de paradas"></select>
+                        <select id="filtroSentido" aria-label="Filtro por sentido" th:if="${admin}">
+                            <option value="">Todos os sentidos</option>
+                            <option value="IDA">IDA</option>
+                            <option value="VOLTA">VOLTA</option>
+                        </select>
+                        <div class="segmented" th:if="${!admin}">
+                            <button id="btnParadasIda" class="active" type="button" onclick="selecionarSentidoParadas('IDA')">IDA</button>
+                            <button id="btnParadasVolta" type="button" onclick="selecionarSentidoParadas('VOLTA')">VOLTA</button>
+                        </div>
+                        <button type="button" onclick="carregarParadas()" th:if="${admin}">Todas</button>
+                        <button class="primary" type="button" onclick="carregarParadasDaLinha()" th:if="${admin}">Da linha</button>
+                        <button class="primary" type="button" onclick="carregarMapaParadasUsuario()" th:if="${!admin}">Atualizar rota</button>
+                    </div>
+                </div>
+
+                <form id="formParada" class="card" th:if="${admin}">
+                    <h3>Cadastrar parada</h3>
+                    <div class="grid">
+                        <div>
+                            <label for="paradaLinhaId">Linha</label>
+                            <select id="paradaLinhaId" name="linhaId" data-linha-select required></select>
+                        </div>
+                        <div>
+                            <label for="paradaNome">Nome</label>
+                            <input id="paradaNome" name="nome" maxlength="150" required>
+                        </div>
+                        <div>
+                            <label for="paradaLatitude">Latitude</label>
+                            <input id="paradaLatitude" name="latitude" type="number" step="0.00000001" required>
+                        </div>
+                        <div>
+                            <label for="paradaLongitude">Longitude</label>
+                            <input id="paradaLongitude" name="longitude" type="number" step="0.00000001" required>
+                        </div>
+                        <div>
+                            <label for="paradaOrdem">Ordem</label>
+                            <input id="paradaOrdem" name="ordem" type="number" min="1" required>
+                        </div>
+                        <div>
+                            <label for="paradaSentido">Sentido</label>
+                            <select id="paradaSentido" name="sentido" required>
+                                <option value="IDA">IDA</option>
+                                <option value="VOLTA">VOLTA</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button class="success" type="submit">Salvar parada</button>
+                </form>
+
+                <div id="paradasResultado" class="result empty">Selecione uma consulta de paradas.</div>
+            </div>
+        </section>
+
+        <section id="view-ocorrencias" class="view">
+            <div class="panel">
+                <div class="panel-header">
+                    <div>
+                        <h2>Registrar ocorrência</h2>
+                        <p class="muted">Registre problemas operacionais ligados a uma linha. O sistema notificará automaticamente os usuários que favoritaram essa linha.</p>
+                    </div>
+                    <div class="actions">
+                        <select id="ocorrenciasConsultaLinha" data-linha-select aria-label="Linha para consulta de ocorrências"></select>
+                        <button type="button" onclick="carregarOcorrencias()" th:text="${admin} ? 'Todas' : 'Ativas'">Ativas</button>
+                        <button class="primary" type="button" onclick="carregarOcorrenciasDaLinha()" th:text="${admin} ? 'Da linha' : 'Ativas da linha'">Ativas da linha</button>
+                    </div>
+                </div>
+
+                <form id="formOcorrencia" class="card" th:if="${admin}">
+                    <h3>Registrar ocorrência</h3>
+                    <div class="grid">
+                        <div>
+                            <label for="ocorrenciaLinhaId">Linha</label>
+                            <select id="ocorrenciaLinhaId" name="linhaId" data-linha-select required></select>
+                        </div>
+                        <div>
+                            <label for="ocorrenciaTipo">Tipo</label>
+                            <select id="ocorrenciaTipo" name="tipo" required>
+                                <option value="VEICULO_QUEBRADO">Ônibus quebrado</option>
+                                <option value="ATRASO">Linha atrasada</option>
+                                <option value="INTERROMPIDA">Linha interrompida</option>
+                                <option value="DESVIO">Desvio de rota</option>
+                                <option value="LOTACAO">Lotação</option>
+                                <option value="UNIFICADA">Linha unificada</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="ocorrenciaPrioridade">Prioridade</label>
+                            <select id="ocorrenciaPrioridade" name="prioridade">
+                                <option value="BAIXA">BAIXA</option>
+                                <option value="MEDIA" selected>MÉDIA</option>
+                                <option value="ALTA">ALTA</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="ocorrenciaAtiva">Ativa</label>
+                            <select id="ocorrenciaAtiva" name="ativa">
+                                <option value="true">SIM</option>
+                                <option value="false">NÃO</option>
+                            </select>
+                        </div>
+                    </div>
+                    <label for="ocorrenciaDescricao">Descrição</label>
+                    <textarea id="ocorrenciaDescricao" name="descricao"></textarea>
+                    <button class="success" type="submit">Registrar ocorrência</button>
+                </form>
+
+                <div id="ocorrenciasResultado" class="result empty">Selecione uma consulta de ocorrências.</div>
+            </div>
+        </section>
+
+        <section id="view-reportes" class="view">
+            <div class="panel">
+                <div class="panel-header">
+                    <div>
+                        <h2>Contribuir com um reporte</h2>
+                        <p class="muted" th:if="${admin}">Acompanhe o feed colaborativo de reportes, confirmações e confiabilidade dos autores.</p>
+                        <p class="muted" th:if="${!admin}">Envie reportes e acompanhe o feed colaborativo dos usuários.</p>
+                    </div>
+                    <div class="actions">
+                        <select id="reportesLinhaSelect" data-linha-select aria-label="Linha para reportes"></select>
+                        <button class="primary" type="button" onclick="carregarFeedReportes()">Feed</button>
+                        <button type="button" onclick="carregarReportesDaLinha()">Da linha</button>
+                    </div>
+                </div>
+
+                <form id="formReporte" class="card" th:if="${!admin}">
+                    <h3>Enviar reporte</h3>
+                    <div class="grid">
+                        <div>
+                            <label for="reporteLinhaId">Linha</label>
+                            <select id="reporteLinhaId" name="linhaId" data-linha-select required></select>
+                        </div>
+                        <div>
+                            <label for="reporteTipo">Tipo</label>
+                            <select id="reporteTipo" name="tipoReporte" required>
+                                <option value="PASSOU">PASSOU</option>
+                                <option value="ATRASADO">ATRASADO</option>
+                                <option value="LOTADO">LOTADO</option>
+                                <option value="NAO_PASSOU">NÃO PASSOU</option>
+                                <option value="UNIFICADA">UNIFICADA</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button class="success" type="submit">Enviar reporte</button>
+                </form>
+
+                <div id="reportesResultado" class="result empty">Consulte ou envie reportes.</div>
+            </div>
+        </section>
+
+        <section id="view-favoritos" class="view" th:if="${!admin}">
+            <div class="panel">
+                <div class="panel-header">
+                    <div>
+                        <h2>Minhas linhas favoritas</h2>
+                        <p class="muted">Favorite pela listagem de linhas ou consulte e remova favoritos aqui.</p>
+                    </div>
+                    <button class="primary" type="button" onclick="carregarFavoritos()">Carregar favoritos</button>
+                </div>
+
+                <div id="favoritosResultado" class="result empty">Clique em carregar favoritos para iniciar.</div>
+            </div>
+        </section>
+
+        <section id="view-notificacoes" class="view">
+            <div class="panel">
+                <div class="panel-header">
+                    <div>
+                        <h2 th:text="${admin} ? 'Enviar aviso' : 'Minhas notificações'">Minhas notificações</h2>
+                        <p class="muted" th:if="${admin}">Envie comunicados gerais ou avisos para usuários que favoritaram uma linha, sem criar ocorrência.</p>
+                        <p class="muted" th:if="${!admin}">Consulte ocorrências e avisos atuais separados do histórico.</p>
+                    </div>
+                    <div class="actions">
+                        <select id="filtroLida" aria-label="Filtro por leitura" th:if="${!admin}">
+                            <option value="">Todas</option>
+                            <option value="false">Não lidas</option>
+                            <option value="true">Lidas</option>
+                        </select>
+                        <button class="primary" type="button" onclick="carregarNotificacoes()" th:if="${admin}">Avisos oficiais</button>
+                        <button class="primary" type="button" onclick="carregarNotificacoes()" th:if="${!admin}">Minhas notificações</button>
+                        <button class="danger" type="button" onclick="limparHistoricoNotificacoes()" th:if="${!admin}">Limpar histórico</button>
+                    </div>
+                </div>
+
+                <form id="formNotificacao" class="card" th:if="${admin}">
+                    <h3>Enviar aviso</h3>
+                    <div class="notification-targets" role="radiogroup" aria-label="Destinatários do aviso">
+                        <label>
+                            <input type="radio" name="destinatarios" value="TODOS" checked>
+                            Todos os usuários
+                        </label>
+                        <label>
+                            <input type="radio" name="destinatarios" value="LINHA">
+                            Usuários de uma linha específica
+                        </label>
+                    </div>
+                    <div class="grid">
+                        <div id="campoLinhaNotificacao" class="hidden">
+                            <label for="notificacaoLinhaId">Linha</label>
+                            <select id="notificacaoLinhaId" name="linhaId" data-linha-select></select>
+                        </div>
+                    </div>
+                    <label for="notificacaoTitulo">Título</label>
+                    <input id="notificacaoTitulo" name="titulo" maxlength="100" required>
+                    <label for="notificacaoMensagem">Mensagem</label>
+                    <textarea id="notificacaoMensagem" name="mensagem" required></textarea>
+                    <label>
+                        <input id="notificacaoSuperar" name="superarNotificacoesAtuaisDaLinha" type="checkbox">
+                        Substituir avisos manuais atuais desta linha
+                    </label>
+                    <button class="success" type="submit">Enviar aviso</button>
+                </form>
+
+                <div id="notificacoesResultado" class="result empty">Consulte notificações.</div>
+            </div>
+        </section>
+
+        <section id="view-usuarios" class="view" th:if="${admin}">
+            <div class="panel">
+                <div class="panel-header">
+                    <div>
+                        <h2>Gerenciamento de usuários</h2>
+                        <p class="muted">Cadastre novos administradores com segurança e acompanhe as contas registradas no sistema.</p>
+                    </div>
+                    <div class="actions">
+                        <button class="primary" type="button" onclick="carregarUsuarios()">Atualizar usuários</button>
+                    </div>
+                </div>
+
+                <form id="formAdmin" class="card">
+                    <h3>Cadastrar novo administrador</h3>
+                    <div class="grid">
+                        <div>
+                            <label for="adminNome">Nome completo</label>
+                            <input id="adminNome" name="nome" type="text" maxlength="100" placeholder="Nome do administrador" required>
+                        </div>
+                        <div>
+                            <label for="adminCpf">CPF</label>
+                            <input id="adminCpf" name="cpf" type="text" maxlength="14" inputmode="numeric" autocomplete="off" data-cpf-mask placeholder="000.000.000-00" required>
+                        </div>
+                        <div>
+                            <label for="adminDataNascimento">Data de nascimento</label>
+                            <input id="adminDataNascimento" name="dataNascimento" type="date" required>
+                        </div>
+                        <div>
+                            <label for="adminEmail">Email</label>
+                            <input id="adminEmail" name="email" type="email" maxlength="150" placeholder="admin@waypoint.com" required>
+                        </div>
+                        <div>
+                            <label for="adminSenha">Senha</label>
+                            <div class="input-wrap">
+                                <svg class="icon icon-sm" aria-hidden="true"><use href="/img/icons.svg#i-lock"></use></svg>
+                                <input id="adminSenha" name="senha" type="password" minlength="8" maxlength="255" autocomplete="new-password" placeholder="Mín. 8 caracteres" required>
+                                <button class="password-toggle" type="button" data-password-toggle="adminSenha" aria-controls="adminSenha" aria-pressed="false">Mostrar</button>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="field-hint">A nova conta será criada com perfil ADMIN e senha protegida pela política de segurança do WayPoint.</p>
+                    <button class="success" type="submit">Cadastrar administrador</button>
+                </form>
+
+                <div id="usuariosResultado" class="result empty">Carregando usuários...</div>
+            </div>
+        </section>
+    </main>
+    </div>
+    </div>
+</div>
+<script th:src="@{/js/modules/navigation.js}" src="/js/modules/navigation.js"></script>
+<script th:src="@{/js/modules/mapa.js}" src="/js/modules/mapa.js"></script>
+<script th:src="@{/js/modules/programacao.js}" src="/js/modules/programacao.js"></script>
+<script th:src="@{/js/painel-testes.js}" src="/js/painel-testes.js"></script>
+<script th:src="@{/js/ui/shell.js}" src="/js/ui/shell.js"></script>
+
+</body>
+</html>

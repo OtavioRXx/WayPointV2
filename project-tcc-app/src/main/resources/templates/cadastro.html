@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Criar conta | WayPoint</title>
+    <meta name="theme-color" content="#0B2239">
+    <link rel="icon" type="image/svg+xml" th:href="@{/img/favicon.svg}" href="/img/favicon.svg">
+    <link rel="alternate icon" type="image/png" th:href="@{/img/IconeWaypoint.png}" href="/img/IconeWaypoint.png">
+    <link rel="stylesheet" th:href="@{/css/waypoint.css?v=3}" href="/css/waypoint.css?v=3">
+    <script>if (window.location.protocol === 'file:') window.location.replace('http://localhost:8080/cadastro');</script>
+</head>
+<body>
+<div class="auth-page">
+    <section class="auth-showcase" aria-label="Sobre o WayPoint">
+        <div class="auth-logo"><img th:src="@{/img/LogoWaypoint-claro.png}" src="/img/LogoWaypoint-claro.png" alt="WayPoint" width="168" height="61"></div>
+        <div class="auth-showcase-inner">
+            <h1>Faça parte de uma mobilidade mais conectada.</h1>
+            <p>Crie sua conta para acompanhar o transporte público e contribuir com informações úteis para outros usuários.</p>
+            <ul class="auth-feature-list">
+                <li><svg class="icon" aria-hidden="true"><use href="/img/icons.svg#i-star"></use></svg>Acompanhe linhas favoritas</li>
+                <li><svg class="icon" aria-hidden="true"><use href="/img/icons.svg#i-map"></use></svg>Consulte rotas e paradas no mapa</li>
+                <li><svg class="icon" aria-hidden="true"><use href="/img/icons.svg#i-chat"></use></svg>Compartilhe reportes da sua viagem</li>
+            </ul>
+        </div>
+        <img class="auth-illustration" th:src="@{/img/auth-rota.svg}" src="/img/auth-rota.svg" alt="" width="600" height="240">
+        <p class="auth-place">Transporte público de Ourinhos, SP</p>
+    </section>
+
+    <main class="auth-panel">
+        <section class="auth-card">
+            <div class="auth-card-head">
+                <h1>Criar sua conta</h1>
+                <p class="auth-subtitle">Preencha seus dados para começar a usar o WayPoint.</p>
+            </div>
+            <div class="erro" th:if="${erroCadastro}" th:text="${erroCadastro}" role="alert"></div>
+
+            <form class="auth-form" action="/cadastrar" th:action="@{/cadastrar}" method="post" th:object="${cadastroUsuarioRequest}">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                <div class="field">
+                    <label for="nome">Nome</label>
+                    <div class="input-wrap">
+                        <svg class="icon icon-sm" aria-hidden="true"><use href="/img/icons.svg#i-user"></use></svg>
+                        <input id="nome" type="text" th:field="*{nome}" maxlength="100" autocomplete="name" placeholder="Seu nome completo" required>
+                    </div>
+                </div>
+                <div class="auth-form-row">
+                    <div class="field">
+                        <label for="cpf">CPF</label>
+                        <div class="input-wrap">
+                            <svg class="icon icon-sm" aria-hidden="true"><use href="/img/icons.svg#i-id"></use></svg>
+                            <input id="cpf" type="text" th:field="*{cpf}" maxlength="14" inputmode="numeric" autocomplete="off" data-cpf-mask placeholder="000.000.000-00" required>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label for="dataNascimento">Data de nascimento</label>
+                        <div class="input-wrap">
+                            <svg class="icon icon-sm" aria-hidden="true"><use href="/img/icons.svg#i-calendar"></use></svg>
+                            <input id="dataNascimento" type="date" th:field="*{dataNascimento}" required>
+                        </div>
+                    </div>
+                </div>
+                <div class="field">
+                    <label for="email">Email</label>
+                    <div class="input-wrap">
+                        <svg class="icon icon-sm" aria-hidden="true"><use href="/img/icons.svg#i-mail"></use></svg>
+                        <input id="email" type="email" th:field="*{email}" maxlength="150" autocomplete="email" placeholder="voce@email.com" required>
+                    </div>
+                </div>
+                <div class="field">
+                    <label for="senha">Senha</label>
+                    <div class="input-wrap">
+                        <svg class="icon icon-sm" aria-hidden="true"><use href="/img/icons.svg#i-lock"></use></svg>
+                        <input id="senha" type="password" th:field="*{senha}" minlength="8" maxlength="255" autocomplete="new-password" placeholder="Mínimo de 8 caracteres" required aria-describedby="senhaDica">
+                        <button class="password-toggle" type="button" data-password-toggle="senha" aria-controls="senha" aria-pressed="false">Mostrar</button>
+                    </div>
+                    <span class="field-hint" id="senhaDica">Use pelo menos 8 caracteres e evite senhas comuns, como 12345678.</span>
+                </div>
+                <button class="wp-button primary" type="submit">Criar conta</button>
+            </form>
+
+            <div class="auth-visitor-box">
+                <a class="wp-button ghost auth-visitor-btn" href="/home" th:href="@{/home}">
+                    <svg class="icon icon-sm" aria-hidden="true"><use href="/img/icons.svg#i-map"></use></svg>
+                    Continuar sem login (acesso visitante)
+                </a>
+            </div>
+
+            <div class="auth-link">Já possui uma conta? <a href="/login" th:href="@{/login}">Voltar para login</a></div>
+        </section>
+    </main>
+</div>
+<script th:src="@{/js/ui/shell.js}" src="/js/ui/shell.js"></script>
+</body>
+</html>

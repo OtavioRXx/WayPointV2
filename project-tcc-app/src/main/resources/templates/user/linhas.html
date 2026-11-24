@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="_csrf" th:content="${_csrf?.token}">
+    <meta name="_csrf_header" th:content="${_csrf?.headerName}">
+    <title>Linhas - WayPoint</title>
+    <meta name="theme-color" content="#0B2239">
+    <link rel="icon" type="image/svg+xml" th:href="@{/img/favicon.svg}" href="/img/favicon.svg">
+    <link rel="alternate icon" type="image/png" th:href="@{/img/IconeWaypoint.png}" href="/img/IconeWaypoint.png">
+    <link rel="stylesheet" th:href="@{/css/waypoint.css?v=3}" href="/css/waypoint.css?v=3">
+</head>
+<body th:data-user-id="${usuarioId}" th:data-user-type="${usuarioTipo}" th:data-authenticated="${autenticado != false}">
+<div class="app">
+    <aside th:replace="~{fragments/user-shell :: sidebar('linhas')}"></aside>
+
+    <div class="app-main">
+        <header th:replace="~{fragments/user-shell :: topbar('Linhas', 'Consulte linhas e gerencie favoritos em um só lugar.')}"></header>
+        <div id="mensagem" class="alert" role="status" aria-live="polite"></div>
+
+        <main class="content module-page">
+            <div class="visitor-banner" th:if="${autenticado == false}" role="note">
+                <div>
+                    <strong>Modo visitante</strong>
+                    <p>Você pode consultar todas as linhas e ver rotas no mapa. Entre na sua conta para favoritar linhas e receber avisos personalizados.</p>
+                </div>
+                <div class="visitor-banner-actions">
+                    <a class="wp-button primary" th:href="@{/login}" href="/login">Entrar</a>
+                    <a class="wp-button ghost" th:href="@{/cadastro}" href="/cadastro">Criar conta</a>
+                </div>
+            </div>
+
+            <section class="panel">
+                <div class="panel-header">
+                    <div>
+                        <h2>Linhas disponíveis</h2>
+                        <p class="muted">Favorite as linhas que você usa para receber notificações oficiais.</p>
+                    </div>
+                    <button class="primary" type="button" id="btnAtualizarLinhas">
+                        <svg class="icon icon-sm" aria-hidden="true"><use href="/img/icons.svg#i-refresh"></use></svg>
+                        Atualizar
+                    </button>
+                </div>
+                <div id="linhasLista" class="result empty">Carregando linhas...</div>
+            </section>
+        </main>
+    </div>
+</div>
+<script th:src="@{/js/core/api.js}" src="/js/core/api.js"></script>
+<script th:src="@{/js/modules/navigation.js}" src="/js/modules/navigation.js"></script>
+<script th:src="@{/js/modules/linhas.js}" src="/js/modules/linhas.js"></script>
+<script th:src="@{/js/ui/shell.js}" src="/js/ui/shell.js"></script>
+</body>
+</html>

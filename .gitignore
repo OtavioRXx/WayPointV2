@@ -1,0 +1,52 @@
+# Segredos e configuracoes locais que nunca devem ir para o GitHub
+.env
+.env.*
+*.pem
+*.key
+*.p12
+*.jks
+secrets.properties
+application-secret.properties
+application-secrets.properties
+application-local.properties
+application-*.local.properties
+*secret*.properties
+*secrets*.properties
+
+# Tokens e credenciais locais
+*.token
+*.credentials
+
+# Logs e caches
+*.log
+logs/
+.cache/
+node_modules/
+
+# Sistema operacional e editores temporarios
+Thumbs.db
+Desktop.ini
+.DS_Store
+*.swp
+*.swo
+*~
+
+# Arquivos gerados pela compilacao e build
+target/
+build/
+out/
+
+# Configuracoes locais de IDEs
+.idea/
+*.iml
+*.iws
+*.ipr
+.vscode/
+.classpath
+.project
+.settings/
+.sts4-cache
+.apt_generated
+
+# Material do artigo mantido fora do projeto
+Artigo_WayPoint/
